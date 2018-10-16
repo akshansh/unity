@@ -42,6 +42,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private bool m_Jumping;
         private AudioSource m_AudioSource;
 
+        private bool mouseButtonDown = false;
+        public GameObject ballD;
+
         // Use this for initialization
         private void Start()
         {
@@ -81,6 +84,16 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
 
             m_PreviouslyGrounded = m_CharacterController.isGrounded;
+
+            if (Input.GetMouseButtonDown(0)) {
+                mouseButtonDown = true;
+            }
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                mouseButtonDown = false;
+            }
+
         }
 
 
@@ -97,7 +110,15 @@ namespace UnityStandardAssets.Characters.FirstPerson
             float speed;
             GetInput(out speed);
             // always move along the camera forward as it is the direction that it being aimed at
-            Vector3 desiredMove = transform.forward*m_Input.y + transform.right*m_Input.x;
+            //Vector3 desiredMove = transform.forward*m_Input.y + transform.right*m_Input.x;
+            Vector3 desiredMove;
+            if (mouseButtonDown)
+            {
+                desiredMove = Camera.main.transform.forward;
+            }
+            else {
+                desiredMove = Vector3.zero;
+            }
 
             // get a normal for the surface that is being touched to move along it
             RaycastHit hitInfo;
@@ -203,9 +224,18 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void GetInput(out float speed)
         {
+
             // Read input
-            float horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
-            float vertical = CrossPlatformInputManager.GetAxis("Vertical");
+            //float horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
+            //float vertical = CrossPlatformInputManager.GetAxis("Vertical");
+            float horizontal = 0.0f;
+            float vertical = 0.0f;
+
+            if(mouseButtonDown)
+            {
+                horizontal = transform.forward.x;
+                vertical = transform.forward.z;
+            }
 
             bool waswalking = m_IsWalking;
 
